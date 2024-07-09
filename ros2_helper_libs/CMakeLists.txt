@@ -12,7 +12,9 @@ find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 
-include_directories(include)
+#include_directories(include)
+
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -36,7 +38,10 @@ ament_target_dependencies(geometry_msgs_utils
   "tf2_geometry_msgs"
   "tf2_ros"
 )
-
+target_include_directories(geometry_msgs_utils
+  PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+    "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 
 # tf2_utils library
 add_library(tf2_utils
@@ -47,6 +52,10 @@ ament_target_dependencies(tf2_utils
   "tf2_geometry_msgs"
   "tf2_ros"
 )
+target_include_directories(tf2_utils
+  PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+    "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 
 # install libraries
 install(
@@ -62,6 +71,7 @@ install(
   RUNTIME DESTINATION bin
 )
 
+
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(
   "rclcpp"
@@ -70,5 +80,7 @@ ament_export_dependencies(
   "tf2_ros"
 )
 
+#ament_export_include_directories("include/${PROJECT_NAME}")
+#ament_export_libraries(geometry_msgs_utils tf2_utils)
 
 ament_package()
