@@ -1,6 +1,7 @@
 #ifndef ROS2_HELPERS__GEOMETRY_MSGS_UTILS_HPP__
 #define ROS2_HELPERS__GEOMETRY_MSGS_UTILS_HPP__
 
+#include "geometry_msgs/msg/detail/point__struct.hpp"
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2/convert.h"
 
@@ -93,6 +94,20 @@ inline Point vec_subt(const Point &lhs, const Point &rhs) {
   result.y = lhs.y - rhs.y;
   result.z = lhs.z - rhs.z;
   return result;
+}
+
+template<class BinaryOperator>
+inline void apply_to_members(BinaryOperator op, const Point &lhs, const Point &rhs, Point &res){
+    res.x = op(lhs.x,rhs.x);
+    res.y = op(lhs.y,rhs.y);
+    res.z = op(lhs.z,rhs.z);
+}
+
+template<class BinaryOperator>
+inline Point apply_to_members(BinaryOperator op, const Point &lhs, const Point &rhs){
+    Point res;
+    apply_to_members(op,lhs,rhs,res);
+    return res;
 }
 
 inline Quaternion ham_mult(const Quaternion &q1,const Quaternion &q2) {

@@ -3,6 +3,7 @@
 
 #include "geometry_msgs/msg/detail/point__struct.hpp"
 #include "geometry_msgs/msg/detail/pose__struct.hpp"
+#include "rclcpp/logging.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 //select older library include if tagged pre ros-humble
@@ -34,6 +35,18 @@ inline double degToRad(const double &deg) {
   return deg * M_PI / 180;
 }
 
+
+//! corrects angle if over/under +/- Pi radians
+inline double fix_angle(const double &raw_angle) {
+  if (raw_angle > M_PI) {
+    return raw_angle - 2 * M_PI;
+  } else if (raw_angle < -M_PI) {
+   return raw_angle + 2 * M_PI;
+  }
+  return raw_angle;
+}
+
+
 //! returns yaw of rotation quaternion
 inline double get_yaw(const geometry_msgs::msg::Quaternion &q_in) {
   tf2::Quaternion q;
@@ -41,7 +54,7 @@ inline double get_yaw(const geometry_msgs::msg::Quaternion &q_in) {
   tf2::Matrix3x3 m(q);
   double roll, pitch, yaw;
   m.getRPY(roll, pitch, yaw);
-  return yaw;
+  return fix_angle(yaw);
 }
 
 
@@ -79,16 +92,6 @@ inline void convert_to_global(const geometry_msgs::msg::Point &local, geometry_m
   global.y = local.x * std::sin(yaw) + local.y * cos(yaw) + local_frame.position.y;
 }
 
-
-//! corrects angle if over/under +/- Pi radians
-inline double fix_angle(const double &raw_angle) {
-  if (raw_angle > M_PI) {
-    return raw_angle - 2 * M_PI;
-  } else if (raw_angle < -M_PI) {
-   return raw_angle + 2 * M_PI;
-  }
-  return raw_angle;
-}
 
 
 //! returns polar angle between two points (from point1 to point2)
