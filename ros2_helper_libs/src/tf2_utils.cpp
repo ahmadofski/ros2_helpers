@@ -67,10 +67,9 @@ void convert_to_local(geometry_msgs::msg::Point &local, const geometry_msgs::msg
 void convert_to_global(const geometry_msgs::msg::Point &local, geometry_msgs::msg::Point &global, const geometry_msgs::msg::Pose &local_frame) {
   const double yaw = get_yaw(local_frame.orientation);
   
-  global.x = local.x * std::cos(yaw) - local.y * sin(yaw) + local_frame.position.x;
-  global.y = local.x * std::sin(yaw) + local.y * cos(yaw) + local_frame.position.y;
+  global.x = local.x * std::cos(yaw) - local.y * std::sin(yaw) + local_frame.position.x;
+  global.y = local.x * std::sin(yaw) + local.y * std::cos(yaw) + local_frame.position.y;
 }
-
 
 
 //! returns polar angle between two points (from point1 to point2)
@@ -99,7 +98,7 @@ double get_normal(const geometry_msgs::msg::Point &point1,
 
 //! returns smallest angle between 2 orientations
 double smallest_angle(const double &theta1, const double &theta2) {
-  return fix_angle(std::fmod(theta1 - theta2, 2 * M_PI));
+  return std::fmod(fix_angle(theta1 - theta2), 2 * M_PI);
 }
 
 

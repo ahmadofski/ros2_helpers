@@ -11,6 +11,7 @@ find_package(rclcpp REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
 
 #include_directories(include)
 
@@ -57,6 +58,24 @@ target_include_directories(tf2_utils
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
     "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 
+# position tracker
+add_library(position_tracker
+  src/position_tracker.cpp)
+target_link_libraries(position_tracker tf2_utils geometry_msgs_utils)
+ament_target_dependencies(position_tracker
+  "rclcpp"
+  "geometry_msgs"
+  "nav_msgs"
+  "tf2_geometry_msgs"
+  "tf2_ros"
+)
+target_include_directories(position_tracker
+  PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+    "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+
+
+
 # install libraries
 install(
   DIRECTORY include/
@@ -64,7 +83,7 @@ install(
 )
 
 install(
-  TARGETS geometry_msgs_utils tf2_utils
+  TARGETS geometry_msgs_utils tf2_utils position_tracker
   EXPORT export_${PROJECT_NAME}
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
