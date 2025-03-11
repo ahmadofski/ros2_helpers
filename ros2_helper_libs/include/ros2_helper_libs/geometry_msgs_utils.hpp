@@ -18,6 +18,7 @@
 #include "geometry_msgs/msg/pose.hpp"
 #include "geometry_msgs/msg/quaternion.hpp"
 #include <cmath>
+#include <vector>
 
 using namespace geometry_msgs::msg; 
 
@@ -27,6 +28,8 @@ Point make_point(const double &x = 0.0, const double &y = 0.0, const double &z =
 Quaternion make_quaternion(const double &w = 1.0, const double &x = 0.0, const double &y = 0.0, const double &z = 0.0);
 
 Quaternion make_quaternion(const tf2::Quaternion &q_in);
+
+Quaternion quaternion_from_rpy(const double &roll, const double &pitch, const double &yaw);
 
 Pose make_pose(const Point &p, const Quaternion &q);
 
@@ -67,6 +70,12 @@ double point_magnitude(const Point &p);
 Quaternion yaw_rotate(const double &yaw);
 
 Pose offset_pose(const Pose &pose, const Pose &offset);
+
+Point centroid(const std::vector<Point> &points);
+
+Point polygon_normal(const std::vector<Point> &points, const bool &ccw = false);
+
+Quaternion polygon_normal_q(const std::vector<Point> &points, const bool &ccw = false);
 
 } // namespace msg_operators
 

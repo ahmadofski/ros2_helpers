@@ -28,6 +28,12 @@ Quaternion make_quaternion(const tf2::Quaternion &q_in) {
   return q;
 }
 
+Quaternion quaternion_from_rpy(const double &roll, const double &pitch, const double &yaw){
+    tf2::Quaternion quaternion;
+    quaternion.setRPY(roll, pitch, yaw);
+    return make_quaternion(quaternion);
+}
+
 Pose make_pose(const Point &p, const Quaternion &q)  {
   Pose pose;
   pose.position = p;
@@ -106,6 +112,67 @@ Quaternion yaw_rotate(const double &yaw){
 
 Pose offset_pose(const Pose &pose, const Pose &offset){
     return construct_utils::make_pose(vec_add(pose.position, offset.position),ham_mult(pose.orientation, offset.orientation));
+}
+
+Point centroid (const std::vector<Point> &points){
+  Point centroid = construct_utils::make_point();
+  if (points.size() > 0) {
+    const double divisor = 1.0 / points.size();
+    for (auto point : points) {
+      centroid.x += point.x * divisor;
+      centroid.y += point.y * divisor;
+      centroid.z += point.z * divisor;
+    }
+  }
+  return centroid;
+}
+
+Point polygon_normal(const std::vector<Point> &points, const bool &ccw){
+  Point normal = construct_utils::make_point();
+  if (points.size() >= 3) {
+    // selection order on handedness of coordinate system
+    auto p0 = ccw ? points[0] : points[2];
+    auto p1 = points[1];
+    auto p2 = ccw ? points[2] : points[0];
+
+    Point e0 = vec_subt(p1, p0);
+    Point e1 = vec_subt(p2, p0);
+
+    // Cross product to get normal vector
+    normal.x = e0.y * e1.z - e0.z * e1.y;
+    normal.y = e0.z * e1.x - e0.x * e1.z;
+    normal.z = e0.x * e1.y - e0.y * e1.x;
+
+    // Normalize the normal vector
+    double norm = point_magnitude(normal);
+    if (norm != 0) {
+      norm = 1 / norm;
+      normal = scalar_mult(normal, norm);
+    }
+  }
+  return normal;
+}
+
+Quaternion polygon_normal_q(const std::vector<Point> &points, const bool &ccw){
+    Point n = polygon_normal(points,ccw);
+    Quaternion q;
+    // Calculate the norm of the normal vector
+    double norm = std::sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
+
+    // Calculate the angle with respect to the z-axis
+    double angle = std::acos(n.z / norm);
+
+    // Calculate sine and cosine of half the angle
+    double sin_half_angle = std::sin(angle / 2.0);
+    double cos_half_angle = std::cos(angle / 2.0);
+
+    // Calculate quaternion components
+    q.w = cos_half_angle;
+    q.x = -n.y * sin_half_angle / norm;
+    q.y = n.x * sin_half_angle / norm;
+    q.z = 0.0; // Assuming rotation around the z-axis
+
+    return q;
 }
 
 } // namespace msg_operators
