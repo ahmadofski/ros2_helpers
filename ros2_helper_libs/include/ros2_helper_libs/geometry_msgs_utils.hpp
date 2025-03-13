@@ -65,7 +65,7 @@ inline Point apply_to_members(BinaryOperator op, const Point &lhs, const Point &
 
 Quaternion ham_mult(const Quaternion &q1,const Quaternion &q2);
 
-Quaternion dot(const Quaternion &q1,const Quaternion &q2);
+double dot(const Quaternion &q1,const Quaternion &q2);
 
 double point_magnitude(const Point &p);
 
