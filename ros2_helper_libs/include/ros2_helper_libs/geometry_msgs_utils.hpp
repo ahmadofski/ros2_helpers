@@ -79,6 +79,8 @@ Point polygon_normal(const std::vector<Point> &points, const bool &ccw = false);
 
 Quaternion polygon_normal_q(const std::vector<Point> &points, const bool &ccw = false);
 
+Pose average_pose(const std::vector<Pose> &poses);
+
 } // namespace msg_operators
 
 #endif
