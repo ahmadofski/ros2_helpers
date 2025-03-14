@@ -179,4 +179,33 @@ Quaternion polygon_normal_q(const std::vector<Point> &points, const bool &ccw){
     return q;
 }
 
+void normalise(Quaternion &q){
+  const double norm = std::sqrt(std::pow(q.w,2)  + std::pow(q.x,2) + std::pow(q.y,2) +std::pow(q.z,2));
+  const double ilen = norm !=0 ? 1 / norm : 1;
+  q.w *= iLen;
+	q.x *= iLen;
+	q.y *= iLen;
+	q.z *= iLen;
+}  
+
+Pose average_pose(const std::vector<Pose> &poses){
+  size_t length = poses.size();
+  Pose avg = construct_utils::make_pose();
+   if (length > 0) {
+    for (size_t i=0; i<length; i++) {
+       double weight = i > 0 && dot(poses[0],poses[i]) < 0.0 ? -1 : 1;
+       avg.position.x += poses[i].position.x / length;
+       avg.position.y += poses[i].position.y / length;
+       avg.position.z += poses[i].position.z / length;
+       avg.orientation.w += poses[i].orientation.w * weight;
+       avg.orientation.x += poses[i].orientation.x * weight;
+       avg.orientation.y += poses[i].orientation.y * weight;
+       avg.orientation.z += poses[i].orientation.z * weight;
+    }
+    normalise(avg.orientation);
+  }
+  return avg;
+  
+}
+
 } // namespace msg_operators
