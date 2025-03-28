@@ -181,7 +181,7 @@ Quaternion polygon_normal_q(const std::vector<Point> &points, const bool &ccw){
 
 void normalise(Quaternion &q){
   const double norm = std::sqrt(std::pow(q.w,2)  + std::pow(q.x,2) + std::pow(q.y,2) +std::pow(q.z,2));
-  const double ilen = norm !=0 ? 1 / norm : 1;
+  const double iLen = norm !=0 ? 1 / norm : 1;
   q.w *= iLen;
 	q.x *= iLen;
 	q.y *= iLen;
@@ -190,10 +190,10 @@ void normalise(Quaternion &q){
 
 Pose average_pose(const std::vector<Pose> &poses){
   size_t length = poses.size();
-  Pose avg = construct_utils::make_pose();
+  Pose avg = construct_utils::make_pose(0,0,0);
    if (length > 0) {
     for (size_t i=0; i<length; i++) {
-       double weight = i > 0 && dot(poses[0],poses[i]) < 0.0 ? -1 : 1;
+       double weight = i > 0 && dot(poses[0].orientation,poses[i].orientation) < 0.0 ? -1 : 1;
        avg.position.x += poses[i].position.x / length;
        avg.position.y += poses[i].position.y / length;
        avg.position.z += poses[i].position.z / length;
